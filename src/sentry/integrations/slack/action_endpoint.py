@@ -118,11 +118,13 @@ class SlackActionEndpoint(Endpoint):
         payload = {
             'dialog': json.dumps(dialog),
             'trigger_id': data['trigger_id'],
-            'token': integration.metadata['access_token'],
+        }
+        headers = {
+            'Authorization': 'Bearer %s' % integration.metadata['access_token'],
         }
 
         session = http.build_session()
-        req = session.post('https://slack.com/api/dialog.open', data=payload)
+        req = session.post('https://slack.com/api/dialog.open', data=payload, headers=headers)
         resp = req.json()
         if not resp.get('ok'):
             logger.error('slack.action.response-error', extra={'response': resp})
